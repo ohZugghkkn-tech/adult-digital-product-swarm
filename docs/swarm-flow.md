@@ -1,0 +1,3 @@
+OPENAI_API_KEY=your_key_here
+MODEL_NAME=gpt-4o-mini
+DEBUG_MODE=true
