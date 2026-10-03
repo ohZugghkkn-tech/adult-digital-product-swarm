@@ -1,6 +1,11 @@
-class ProductStrategistAgent:
-    def __init__(self):
-        self.role = "Product Strategist"
+from agents.base_agent import BaseAgent
+from config import AGENT_CONFIGS
 
-    def strategy(self, goal: str):
-        return f"Create a clear product thesis, positioning, pricing structure, and offer ladder for: {goal}"
+class ProductStrategistAgent(BaseAgent):
+    def __init__(self):
+        config = AGENT_CONFIGS["product_strategist"]
+        super().__init__(config["name"], config["role"], config["instructions"])
+
+    def generate_strategy(self, brief: str, audience: str) -> str:
+        prompt = f"Create product strategy for '{brief}' for the audience '{audience}'."
+        return self.generate(prompt)

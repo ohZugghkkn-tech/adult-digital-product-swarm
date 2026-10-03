@@ -1,6 +1,11 @@
-class CommunityBuilderAgent:
-    def __init__(self):
-        self.role = "Community Builder"
+from agents.base_agent import BaseAgent
+from config import AGENT_CONFIGS
 
-    def community_plan(self, brand: str):
-        return f"Design the membership model, engagement flows, and community touchpoints for: {brand}"
+class CommunityBuilderAgent(BaseAgent):
+    def __init__(self):
+        config = AGENT_CONFIGS["community_builder"]
+        super().__init__(config["name"], config["role"], config["instructions"])
+
+    def create_community_plan(self, brand: str) -> str:
+        prompt = f"Create a community strategy for '{brand}'."
+        return self.generate(prompt)

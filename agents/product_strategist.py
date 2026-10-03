@@ -1,17 +1,11 @@
-class QAManagerAgent:
-    def __init__(self):
-        self.role = "QA / Quality Control Manager"
+from agents.base_agent import BaseAgent
+from config import AGENT_CONFIGS
 
-    def review(self, outputs: dict):
-        return {
-            "status": "Needs critical QA review before final approval.",
-            "checks": [
-                "brand consistency",
-                "quality and clarity",
-                "conversion logic",
-                "product coherence",
-                "risk and compliance review",
-                "revision feedback"
-            ],
-            "decision": "Block weak output, improve before sending to user."
-        }
+class QAManagerAgent(BaseAgent):
+    def __init__(self):
+        config = AGENT_CONFIGS["qa_manager"]
+        super().__init__(config["name"], config["role"], config["instructions"])
+
+    def review(self, outputs: dict) -> str:
+        prompt = f"Critically review these outputs and provide a QA verdict: {outputs}"
+        return self.generate(prompt)

@@ -1,11 +1,15 @@
-class CEOAgent:
-    def __init__(self):
-        self.role = "CEO / Director Agent"
+from agents.base_agent import BaseAgent
+from config import AGENT_CONFIGS
 
-    def plan(self, goal: str, audience: str, brand_tone: str):
-        return {
-            "goal": goal,
-            "audience": audience,
-            "brand_tone": brand_tone,
-            "priority": "Define strategy, assign teams, and approve final output."
-        }
+class CEOAgent(BaseAgent):
+    def __init__(self):
+        config = AGENT_CONFIGS["ceo"]
+        super().__init__(config["name"], config["role"], config["instructions"])
+
+    def run_strategy(self, brief: str) -> str:
+        prompt = f"Analyze this business brief and define strategy: {brief}"
+        return self.generate(prompt)
+
+    def approve_final(self, qa_review: str) -> str:
+        prompt = f"Review this QA review and decide final approval: {qa_review}"
+        return self.generate(prompt)
