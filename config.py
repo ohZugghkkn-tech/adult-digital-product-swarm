@@ -8,6 +8,7 @@ hierarchy: 1 CEO, 1 QA gate and 15 specialist agents.
 import logging
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict
 
 try:
@@ -47,8 +48,18 @@ def _env_bool(name: str, default: bool) -> bool:
 class Settings:
     """Runtime settings, read once at import time."""
 
+    # provider selection: auto | openai | local | handoff | template
+    SWARM_PROVIDER: str = _env_str("SWARM_PROVIDER", "auto")
+    RUNS_DIR: str = _env_str("RUNS_DIR", "runs")
+
     OPENAI_API_KEY: str = _env_str("OPENAI_API_KEY", "")
+    OPENAI_BASE_URL: str = _env_str("OPENAI_BASE_URL", "")
     MODEL_NAME: str = _env_str("MODEL_NAME", "gpt-4o-mini")
+
+    # local OpenAI-compatible server (Ollama, LM Studio, llama.cpp, vLLM)
+    LOCAL_BASE_URL: str = _env_str("LOCAL_BASE_URL", "")
+    LOCAL_API_KEY: str = _env_str("LOCAL_API_KEY", "")
+    LOCAL_MODEL: str = _env_str("LOCAL_MODEL", "")
     TEMPERATURE: float = _env_float("TEMPERATURE", 0.7)
     MAX_TOKENS: int = _env_int("MAX_TOKENS", 2000)
     REQUEST_TIMEOUT: float = _env_float("REQUEST_TIMEOUT", 60.0)
@@ -59,6 +70,8 @@ class Settings:
 
 
 settings = Settings()
+
+REPO_ROOT = Path(__file__).resolve().parent
 
 
 def setup_logging() -> None:
