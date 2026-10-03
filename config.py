@@ -1,24 +1,91 @@
+"""Central configuration for the Adult Digital Product Swarm.
+
+Every value can be provided through environment variables or a local ``.env``
+file (see ``.env.example``). ``AGENT_CONFIGS`` at the bottom defines the swarm
+hierarchy: 1 CEO, 1 QA gate and 15 specialist agents.
+"""
+
+import logging
 import os
-from typing import Dict, List
-from dotenv import load_dotenv
-from pydantic import BaseSettings
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
 
-class Settings(BaseSettings):
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    MODEL_NAME: str = os.getenv("MODEL_NAME", "gpt-4o-mini")
-    TEMPERATURE: float = float(os.getenv("TEMPERATURE", "0.7"))
-    MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "2000"))
-    DEBUG_MODE: bool = os.getenv("DEBUG_MODE", "true").lower() == "true"
-    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+    load_dotenv()
+except ImportError:  # python-dotenv is optional; plain env vars still work
+    pass
 
-    class Config:
-        env_file = ".env"
+
+def _env_str(name: str, default: str) -> str:
+    return os.getenv(name, default).strip()
+
+
+def _env_int(name: str, default: int) -> int:
+    try:
+        return int(_env_str(name, str(default)))
+    except ValueError:
+        return default
+
+
+def _env_float(name: str, default: float) -> float:
+    try:
+        return float(_env_str(name, str(default)))
+    except ValueError:
+        return default
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+@dataclass(frozen=True)
+class Settings:
+    """Runtime settings, read once at import time."""
+
+    # provider selection: auto | openai | local | handoff | template
+    SWARM_PROVIDER: str = _env_str("SWARM_PROVIDER", "auto")
+    RUNS_DIR: str = _env_str("RUNS_DIR", "runs")
+
+    OPENAI_API_KEY: str = _env_str("OPENAI_API_KEY", "")
+    OPENAI_BASE_URL: str = _env_str("OPENAI_BASE_URL", "")
+    MODEL_NAME: str = _env_str("MODEL_NAME", "gpt-4o-mini")
+
+    # local OpenAI-compatible server (Ollama, LM Studio, llama.cpp, vLLM)
+    LOCAL_BASE_URL: str = _env_str("LOCAL_BASE_URL", "")
+    LOCAL_API_KEY: str = _env_str("LOCAL_API_KEY", "")
+    LOCAL_MODEL: str = _env_str("LOCAL_MODEL", "")
+    TEMPERATURE: float = _env_float("TEMPERATURE", 0.7)
+    MAX_TOKENS: int = _env_int("MAX_TOKENS", 2000)
+    REQUEST_TIMEOUT: float = _env_float("REQUEST_TIMEOUT", 60.0)
+    MAX_RETRIES: int = _env_int("MAX_RETRIES", 2)
+    MAX_WORKERS: int = max(1, _env_int("MAX_WORKERS", 4))
+    DEBUG_MODE: bool = _env_bool("DEBUG_MODE", True)
+    LOG_LEVEL: str = _env_str("LOG_LEVEL", "INFO").upper()
+
 
 settings = Settings()
 
-AGENT_CONFIGS: Dict[str, Dict[str, object]] = {
+REPO_ROOT = Path(__file__).resolve().parent
+
+
+def setup_logging() -> None:
+    """Apply DEBUG_MODE / LOG_LEVEL to the swarm logger (idempotent)."""
+    level_name = "DEBUG" if settings.DEBUG_MODE else settings.LOG_LEVEL
+    level = getattr(logging, level_name, logging.INFO)
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s %(levelname)-7s %(name)s: %(message)s",
+        datefmt="%H:%M:%S",
+    )
+    logging.getLogger("swarm").setLevel(level)
+
+AGENT_CONFIGS: Dict[str, Dict[str, Any]] = {
     "ceo": {
         "name": "CEO / Director Agent",
         "role": "Strategic leadership and final approval",

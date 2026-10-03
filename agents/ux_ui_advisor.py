@@ -1,11 +1,11 @@
 from agents.base_agent import BaseAgent
 from config import AGENT_CONFIGS
 
-class ProductDeveloperAgent(BaseAgent):
+class UXUIAdvisorAgent(BaseAgent):
     def __init__(self):
-        config = AGENT_CONFIGS["product_developer"]
+        config = AGENT_CONFIGS["ux_ui_advisor"]
         super().__init__(config["name"], config["role"], config["instructions"])
 
-    def build_spec(self, product_type: str, features: str) -> str:
-        prompt = f"Define build specification for a {product_type} with these features: {features}."
+    def design_journey(self, product: str) -> str:
+        prompt = f"Design the customer journey and funnel for '{product}'."
         return self.generate(prompt)
