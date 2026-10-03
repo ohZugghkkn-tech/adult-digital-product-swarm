@@ -1,3 +1,21 @@
-OPENAI_API_KEY=your_key_here
-MODEL_NAME=gpt-4o-mini
-DEBUG_MODE=true
+# Swarm Flow
+
+1. CEO receives the brief.
+2. CEO assigns tasks to the specialist agents.
+3. Teams create their outputs (16 deliverables, parallel by default).
+4. QA Manager reviews and critiques.
+5. CEO approves the final output.
+6. Feedback loops back into future iterations.
+
+This is the intended hierarchy for adult digital product creation: leadership + QA gate + specialist teams.
+
+---
+
+## Recommended team layout
+
+- CEO / Director
+- QA / Quality Control
+- Product Team
+- Content Team
+- Marketing Team
+- Community & Operations Team

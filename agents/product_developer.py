@@ -1,11 +1,11 @@
 from agents.base_agent import BaseAgent
 from config import AGENT_CONFIGS
 
-class CourseArchitectAgent(BaseAgent):
+class ProductDeveloperAgent(BaseAgent):
     def __init__(self):
-        config = AGENT_CONFIGS["course_architect"]
+        config = AGENT_CONFIGS["product_developer"]
         super().__init__(config["name"], config["role"], config["instructions"])
 
-    def design_curriculum(self, topic: str, audience: str) -> str:
-        prompt = f"Design a curriculum for '{topic}' aimed at '{audience}'."
+    def build_spec(self, product_type: str, features: str) -> str:
+        prompt = f"Define build specification for a {product_type} with these features: {features}."
         return self.generate(prompt)

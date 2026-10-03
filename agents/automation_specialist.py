@@ -1,11 +1,11 @@
 from agents.base_agent import BaseAgent
 from config import AGENT_CONFIGS
 
-class CommunityBuilderAgent(BaseAgent):
+class AutomationSpecialistAgent(BaseAgent):
     def __init__(self):
-        config = AGENT_CONFIGS["community_builder"]
+        config = AGENT_CONFIGS["automation_specialist"]
         super().__init__(config["name"], config["role"], config["instructions"])
 
-    def create_community_plan(self, brand: str) -> str:
-        prompt = f"Create a community strategy for '{brand}'."
+    def create_automation_flow(self, product: str) -> str:
+        prompt = f"Create automation flows for '{product}'."
         return self.generate(prompt)

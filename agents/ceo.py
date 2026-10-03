@@ -1,34 +1,15 @@
-# Adult Digital Product Swarm
+from agents.base_agent import BaseAgent
+from config import AGENT_CONFIGS
 
-A hierarchical multi-agent system designed for adult digital product creation and validation.
+class CEOAgent(BaseAgent):
+    def __init__(self):
+        config = AGENT_CONFIGS["ceo"]
+        super().__init__(config["name"], config["role"], config["instructions"])
 
-## Structure
+    def run_strategy(self, brief: str) -> str:
+        prompt = f"Analyze this business brief and define strategy: {brief}"
+        return self.generate(prompt)
 
-- CEO / Director Agent
-- QA / Quality Control Manager
-- Product Team
-- Content Team
-- Marketing Team
-- Community & Operations Team
-
-## Workflow
-
-1. CEO defines strategy from your brief.
-2. Product, content, marketing, and ops agents produce outputs.
-3. QA Manager reviews every output critically.
-4. CEO gives final approval.
-5. Final output is delivered only after approval.
-
-## Run locally
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-python -m streamlit run app.py
-```
-
-## Notes
-
-This is a starter swarm framework with clear hierarchy and specialist roles. Add more custom logic or product-specific prompts as needed.
+    def approve_final(self, qa_review: str) -> str:
+        prompt = f"Review this QA review and decide final approval: {qa_review}"
+        return self.generate(prompt)
